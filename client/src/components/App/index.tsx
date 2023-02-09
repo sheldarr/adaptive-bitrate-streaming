@@ -1,7 +1,8 @@
 import React from "react";
 
-import "./App.css";
-import VideoJs from "./components/VideoJs";
+import VideoJs from "../VideoJs";
+
+import "./index.css";
 
 function App() {
   return (
