@@ -30,19 +30,11 @@ export const VideoJS = () => {
 
       setInitialized(true);
       setPlayer(player);
+
+      // @ts-ignore
+      console.log(player.qualityLevels());
     }
   }, [initialized, videoRef]);
-
-  useEffect(() => {
-    const intervalId = setInterval(() => {
-      // @ts-ignore
-      const qualityLevels = player?.qualityLevels();
-
-      console.log(qualityLevels);
-    }, 3000);
-
-    return () => clearInterval(intervalId);
-  }, [player]);
 
   React.useEffect(() => {
     return () => {
