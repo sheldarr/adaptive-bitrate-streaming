@@ -1,4 +1,9 @@
-.App {
+.app {
+  min-height: 100vh;
   text-align: center;
   background-color: #282c34;
+}
+
+.info {
+  font-size: 2rem;
 }
