@@ -10,6 +10,7 @@ const options = program
   .option("-r, --resolutions <resolution...>", "output resolutions", [
     "360",
     "720",
+    "1080",
   ])
   .showHelpAfterError()
   .parse()
