@@ -17,7 +17,7 @@ const VIDEO_JS_OPTIONS = {
   ],
 };
 
-export const VideoJS = () => {
+export const VideoJsDemo = () => {
   const [initialized, setInitialized] = useState(false);
   const [player, setPlayer] = useState<Player | null>(null);
   const videoRef = useRef(null);
@@ -46,9 +46,9 @@ export const VideoJS = () => {
 
   return (
     <div data-vjs-player>
-      <video ref={videoRef} className="video-js vjs-big-playcentered" />
+      <video ref={videoRef} className="video-js" />
     </div>
   );
 };
 
-export default VideoJS;
+export default VideoJsDemo;

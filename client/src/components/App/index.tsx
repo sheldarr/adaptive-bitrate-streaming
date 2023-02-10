@@ -1,7 +1,8 @@
 import React from "react";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
+import ReactPlayerDemo from "../ReactPlayerDemo";
 
-import VideoJs from "../VideoJs";
+import VideoJsDemo from "../VideoJsDemo";
 
 import "./index.css";
 
@@ -9,12 +10,19 @@ const router = createBrowserRouter([
   {
     path: "/",
     element: (
-      <div className="info">Check /videojs or /react-player for examples</div>
+      <div className="info">
+        Check <a href="/video.js">/video.js</a> or{" "}
+        <a href="/react-player">/react-player</a> for examples
+      </div>
     ),
   },
   {
-    path: "/videojs",
-    element: <VideoJs />,
+    path: "/react-player",
+    element: <ReactPlayerDemo />,
+  },
+  {
+    path: "/video.js",
+    element: <VideoJsDemo />,
   },
 ]);
 
