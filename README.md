@@ -6,7 +6,7 @@
 node m3u8-processor/index.mjs --inputFile m3u8-processor/assets/4k-example.mp4 --outputDirectory client/public/assets
 ```
 
-## Video client
+## Client development
 
 ```sh
 make install dev
