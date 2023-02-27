@@ -1,5 +1,5 @@
 import { spawn } from "child_process";
-import ms from "ms";
+import fs from "fs";
 import path from "path";
 
 import { program } from "commander";
@@ -43,10 +43,11 @@ const RESOLUTIONS = [
 ];
 
 const inputFile = path.parse(options.inputFile);
+const inputFileReadStream = fs.createReadStream(options.inputFile);
 
 const M3U8_EXTENSION = "m3u8";
 
-const inputArgs = ["-hide_banner", "-re", `-i ${options.inputFile}`];
+const inputArgs = ["-hide_banner", "-re", "-i pipe:"];
 const mapArgs = RESOLUTIONS.map(() => {
   return "-map 0:v:0";
 });
@@ -85,6 +86,8 @@ const ffmpegCommand = `ffmpeg \n\t${ffmpegArgs.join("\n\t")}`;
 console.log(ffmpegCommand);
 
 const ffmpeg = spawn("ffmpeg", ffmpegArgs, { shell: true });
+
+inputFileReadStream.pipe(ffmpeg.stdin);
 
 ffmpeg.stdout.on("data", (data) => {
   console.log(`stdout: ${data}`);
