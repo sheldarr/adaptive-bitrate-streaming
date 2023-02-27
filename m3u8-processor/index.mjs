@@ -59,9 +59,10 @@ const filterArgs = RESOLUTIONS.flatMap((resolution, index) => {
   ];
 });
 const varStreamArgs = [
-  `-var_stream_map "${RESOLUTIONS.map((resolution, index) => `v:${index}`).join(
-    " "
-  )}"`,
+  `-var_stream_map "${RESOLUTIONS.map(
+    (resolution, index) =>
+      `v:${index},name:${inputFile.name}_${resolution.type}`
+  ).join(" ")}"`,
 ];
 const hlsArgs = [
   "-hls_time 4",
