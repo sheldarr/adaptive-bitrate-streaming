@@ -1,6 +1,8 @@
 const aws = require("aws-sdk");
-const fs = require("fs");
+const fs = require("fs/promises");
+const path = require("path");
 
+const constants = require("./constants");
 const ffmpeg = require("./ffmpeg");
 
 const s3 = new aws.S3();
@@ -17,18 +19,26 @@ exports.handler = async (event, context) => {
     Key: key,
   };
 
-  console.log("Params:", params);
+  const videoPath = path.parse(key);
 
   try {
     const objectMeta = await s3.headObject(params).promise();
 
     console.log("Object meta:", JSON.stringify(objectMeta, null, 2));
 
-    const objectReadStream = s3.getObject(params).createReadStream();
+    const videoObjectResponse = await s3.getObject(params).promise();
 
-    const ffmpegProcess = ffmpeg(params.Key);
+    console.log(constants);
 
-    objectReadStream.pipe(ffmpegProcess.stdin);
+    await fs.mkdir("/tmp/input");
+    await fs.mkdir("/tmp/output");
+
+    await fs.writeFile(
+      `/tmp/input/${videoPath.base}`,
+      videoObjectResponse.Body
+    );
+
+    const ffmpegProcess = ffmpeg(videoPath);
 
     const ffmpegPromise = new Promise((resolve, reject) => {
       ffmpegProcess.on("close", (code) => {
@@ -38,19 +48,35 @@ exports.handler = async (event, context) => {
 
     const code = await ffmpegPromise;
 
+    if (code !== 0) {
+      throw new Error(`ffmpeg process failed with code ${code}`);
+    }
+
     console.log(`ffmpeg process exited with code ${code}`);
 
-    fs.readdirSync(".").forEach((file) => {
-      console.log(file);
-    });
+    const filePaths = await fs.readdir("/tmp/output");
 
-    fs.readdirSync("./output").forEach((file) => {
-      console.log(file);
-    });
+    console.log(`filePaths`, filePaths);
+
+    await Promise.all(
+      filePaths.map(async (file) => {
+        const fileBuffer = await fs.readFile(`/tmp/output/${file}`);
+
+        console.log(`/tmp/output/${file}`);
+
+        return s3
+          .putObject({
+            Body: fileBuffer,
+            Bucket: bucket,
+            Key: `output/${videoPath.name}${file}`,
+          })
+          .promise();
+      })
+    );
 
     const response = {
       statusCode: 200,
-      body: `${params.Key} processed successfully`,
+      body: `${params.Bucket}/${params.Key} processed successfully`,
     };
 
     return response;
