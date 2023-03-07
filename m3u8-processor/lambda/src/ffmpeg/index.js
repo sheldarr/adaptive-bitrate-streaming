@@ -31,8 +31,8 @@ const RESOLUTIONS = [
   },
 ];
 
-const ffmpeg = (fileName) => {
-  const inputArgs = ["-hide_banner", "-re", "-i pipe:"];
+const ffmpeg = (path) => {
+  const inputArgs = ["-hide_banner", "-re", `-i /tmp/input/${path.base}`];
   const mapArgs = RESOLUTIONS.map(() => {
     return "-map 0:v:0";
   });
@@ -46,15 +46,15 @@ const ffmpeg = (fileName) => {
   });
   const varStreamArgs = [
     `-var_stream_map "${RESOLUTIONS.map(
-      (resolution, index) => `v:${index},name:${fileName}_${resolution.type}`
+      (resolution, index) => `v:${index},name:${path.name}_${resolution.type}`
     ).join(" ")}"`,
   ];
   const hlsArgs = [
     "-hls_time 4",
-    "-hls_segment_filename output/%v_%03d.ts",
+    "-hls_segment_filename /tmp/output/%v_%03d.ts",
     "-master_pl_name master.m3u8",
   ];
-  const output = "output/%v.m3u8";
+  const output = "/tmp/output/%v.m3u8";
 
   const ffmpegArgs = [
     ...inputArgs,
