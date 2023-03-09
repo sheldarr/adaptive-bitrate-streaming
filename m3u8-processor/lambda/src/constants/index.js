@@ -1,9 +1,8 @@
 const TMP_PATH = "/tmp";
-const OUTPUT_PATH = `${TMP_PATH}/output`;
 const INPUT_PATH = `${TMP_PATH}/input`;
+const OUTPUT_PATH = `${TMP_PATH}/output`;
 
 module.exports = {
-  TMP_PATH,
-  OUTPUT_PATH,
   INPUT_PATH,
+  OUTPUT_PATH,
 };

@@ -1,5 +1,7 @@
 const { spawn } = require("child_process");
 
+const { INPUT_PATH, OUTPUT_PATH } = require("../constants");
+
 const RESOLUTIONS = [
   {
     width: "854",
@@ -32,7 +34,7 @@ const RESOLUTIONS = [
 ];
 
 const ffmpeg = (path) => {
-  const inputArgs = ["-hide_banner", "-re", `-i /tmp/input/${path.base}`];
+  const inputArgs = ["-hide_banner", "-re", `-i ${INPUT_PATH}/${path.base}`];
   const mapArgs = RESOLUTIONS.map(() => {
     return "-map 0:v:0";
   });
@@ -51,10 +53,10 @@ const ffmpeg = (path) => {
   ];
   const hlsArgs = [
     "-hls_time 4",
-    "-hls_segment_filename /tmp/output/%v_%03d.ts",
+    `-hls_segment_filename ${OUTPUT_PATH}/%v_%03d.ts`,
     "-master_pl_name master.m3u8",
   ];
-  const output = "/tmp/output/%v.m3u8";
+  const output = `${OUTPUT_PATH}/%v.m3u8`;
 
   const ffmpegArgs = [
     ...inputArgs,

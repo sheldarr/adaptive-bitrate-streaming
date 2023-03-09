@@ -2,7 +2,7 @@ const aws = require("aws-sdk");
 const fs = require("fs/promises");
 const path = require("path");
 
-const constants = require("./constants");
+const { INPUT_PATH, OUTPUT_PATH } = require("./constants");
 const ffmpeg = require("./ffmpeg");
 
 const s3 = new aws.S3();
@@ -28,13 +28,11 @@ exports.handler = async (event, context) => {
 
     const videoObjectResponse = await s3.getObject(params).promise();
 
-    console.log(constants);
-
-    await fs.mkdir("/tmp/input");
-    await fs.mkdir("/tmp/output");
+    await fs.mkdir(INPUT_PATH);
+    await fs.mkdir(OUTPUT_PATH);
 
     await fs.writeFile(
-      `/tmp/input/${videoPath.base}`,
+      `${INPUT_PATH}/${videoPath.base}`,
       videoObjectResponse.Body
     );
 
@@ -56,19 +54,19 @@ exports.handler = async (event, context) => {
 
     const filePaths = await fs.readdir("/tmp/output");
 
-    console.log(`filePaths`, filePaths);
-
     await Promise.all(
       filePaths.map(async (file) => {
-        const fileBuffer = await fs.readFile(`/tmp/output/${file}`);
+        const fileBuffer = await fs.readFile(`${OUTPUT_PATH}/${file}`);
 
-        console.log(`/tmp/output/${file}`);
+        console.log(
+          `Saving ${file} to ${bucket}/output/${videoPath.name}/${file}`
+        );
 
         return s3
           .putObject({
             Body: fileBuffer,
             Bucket: bucket,
-            Key: `output/${videoPath.name}${file}`,
+            Key: `output/${videoPath.name}/${file}`,
           })
           .promise();
       })
@@ -76,7 +74,7 @@ exports.handler = async (event, context) => {
 
     const response = {
       statusCode: 200,
-      body: `${params.Bucket}/${params.Key} processed successfully`,
+      body: `${bucket}/${key} processed successfully`,
     };
 
     return response;
