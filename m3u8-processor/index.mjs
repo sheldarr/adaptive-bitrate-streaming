@@ -42,6 +42,23 @@ const RESOLUTIONS = [
   },
 ];
 
+const THUMBNAILS = [
+  {
+    extension: "jpeg",
+    width: "1920",
+    height: "1080",
+    type: "1080p",
+  },
+  {
+    extension: "jpeg",
+    width: "1280",
+    height: "720",
+    type: "720p",
+  },
+];
+
+const OUTPUT_PATH = "output/";
+
 const inputFile = path.parse(options.inputFile);
 const inputFileReadStream = fs.createReadStream(options.inputFile);
 
@@ -67,10 +84,16 @@ const varStreamArgs = [
 ];
 const hlsArgs = [
   "-hls_time 4",
-  "-hls_segment_filename output/%v_%03d.ts",
+  `-hls_segment_filename ${OUTPUT_PATH}%v_%03d.ts`,
   "-master_pl_name master.m3u8",
 ];
-const output = "output/%v.m3u8";
+const videoOutput = [`${OUTPUT_PATH}%v.m3u8`];
+const thumbnailsOutput = THUMBNAILS.flatMap((thumbnail, index) => [
+  "-r 1",
+  "-t 1",
+  `-filter scale=w=${thumbnail.width}:h=${thumbnail.height}`,
+  `${OUTPUT_PATH}${inputFile.name}_${thumbnail.type}.${thumbnail.extension}`,
+]);
 
 const ffmpegArgs = [
   ...inputArgs,
@@ -79,7 +102,8 @@ const ffmpegArgs = [
   ...filterArgs,
   ...varStreamArgs,
   ...hlsArgs,
-  output,
+  ...videoOutput,
+  ...thumbnailsOutput,
 ];
 
 const ffmpegCommand = `ffmpeg \n\t${ffmpegArgs.join("\n\t")}`;
