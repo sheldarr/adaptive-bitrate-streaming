@@ -52,7 +52,7 @@ exports.handler = async (event, context) => {
 
     console.log(`ffmpeg process exited with code ${code}`);
 
-    const filePaths = await fs.readdir("/tmp/output");
+    const filePaths = await fs.readdir(OUTPUT_PATH);
 
     await Promise.all(
       filePaths.map(async (file) => {
